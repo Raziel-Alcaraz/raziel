@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Metas financieras</title>
+         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="../mobile.css">
+     <link rel="stylesheet" type="text/css" href="../estilos.css">
+     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+       <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <link href="../../css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="../../css/mdb.min.css" rel="stylesheet">
+   <!--jquery de gugl -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- inicio chartjs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+<!-- fin chartjs -->
+<!--numeraljs -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+<script>
+    /*
+    var count=0;
+    function agregar(){
+     count=document.getElementsByClassName("renglon").length;
+        console.log("uno "+count);
+       document.getElementById("tablametas").innerHTML += "<tr class='renglon' id='row"+count+"'><td>\n\
+<input type='text' class='nombre' id='name"+count+"'></td><td><input class='years' type='number' id='years"+count+"'>\n\
+</td><td><input type='number' class='cost' id='cost"+count+"'></td><td class='anual' id='anual"+count+"'>\n\
+</td><td class='mensual' id='mensual"+count+"'></td>\n\
+<td id='delete"+(count)+"' class='lastcolumna'><button\n\
+          class='borrar' onclick='borrar("+(count)+")'>x</button></td></tr>";
+       for(var i=0;i<document.getElementsByClassName("renglon").length;i++){
+          document.getElementsByClassName("renglon")[i].id="row"+i;
+          document.getElementById("delete"+i).innerHTML="<button\n\
+          class='borrar' onclick='borrar("+i+")'>x</button>";
+
+        }
+     count=document.getElementsByClassName("renglon").length;
+console.log("dos "+count);
+    }
+    function borrar(cual){
+        count=document.getElementsByClassName("renglon").length-1;
+        console.log("borrar "+cual);
+     document.getElementById("tablametas").deleteRow(cual);
+     for(var i=0;i<document.getElementsByClassName("renglon").length;i++){
+          document.getElementsByClassName("renglon")[i+1].id="row"+i;
+          document.getElementById("delete"+i).innerHTML="<button\n\
+          class='borrar' onclick='borrar("+i+")'>x</button>";
+
+        }
+        count=document.getElementsByClassName("renglon").length;
+    }
+    */
+    var montototal, maxyears, maxcostanual, mincostanual, totalacumulado;
+
+    function calcular(){
+         maxcostanual = 0 ;
+ mincostanual =1000000000;
+ totalacumulado = 0;
+        montototal = 0;
+        maxyears = 0;
+    for(var i=0;i<document.getElementsByClassName("cost").length;i++){
+        var costo,years,anual,mensual;
+        if(document.getElementsByClassName("cost")[i].value){
+        costo = parseFloat(document.getElementsByClassName("cost")[i].value);
+    }
+    else{costo=0;}
+    if(document.getElementsByClassName("years")[i].value){
+        years = parseFloat(document.getElementsByClassName("years")[i].value);
+    }else{years=0;}
+        if(years>maxyears){
+            maxyears = years;
+        }
+        montototal+=costo;
+        anual = costo/years;
+        mensual = anual/12;
+        if($.isNumeric(anual)){
+        document.getElementsByClassName("anual")[i].innerHTML = "<b>"+numeral(parseFloat(anual).toFixed(2)).format('$0,0.00')+"</b>";
+        document.getElementsByClassName("mensual")[i].innerHTML = "<b>"+numeral(parseFloat(mensual).toFixed(2)).format('$0,0.00')+"</b>";
+    }
+    }
+    document.getElementById("totalcost").innerHTML = numeral(montototal).format('$0,0.00');
+    document.getElementById("totalyears").innerHTML = maxyears;
+    timeline();
+    }
+    function timeline(){
+        var labels=["Inicio"];
+        var metascumplidas = [{x:0,y:0}];
+        var tablota="<table class='tablametas2'><thead><th>Año</th><th>Ahorro mensual</th>\n\
+<th>Ahorro total del año</th><th>Total Acumulado</th><th>Notas</th><tbody>";
+      for(var y=0;y<=maxyears;y++){
+          tablota+="<tr><td>"+y+"</td>";
+          var ahorroanual = 0 ;
+          var ahorromensual = 0;
+          var metaconseguida="";
+          //ciclo loop
+        for(var i=0;i<document.getElementsByClassName("cost").length;i++){
+            //ver que sean numericos y esten en rango
+            if($.isNumeric(document.getElementsByClassName("cost")[i].value)
+            &&$.isNumeric(document.getElementsByClassName("years")[i].value)){
+           if(document.getElementsByClassName("years")[i].value>y){
+               //setear valores
+               var ahorrometa = document.getElementsByClassName("cost")[i].value /
+                    document.getElementsByClassName("years")[i].value;
+            ahorroanual += ahorrometa;
+
+
+
+            ahorromensual =  ahorroanual/12;
+
+            if(ahorroanual > maxcostanual){
+                maxcostanual = ahorroanual;
+            }
+            if(ahorroanual < mincostanual){
+                mincostanual = ahorroanual;
+            }
+
+
+
+                    }
+                    else if(document.getElementsByClassName("years")[i].value==y){
+              metaconseguida = document.getElementsByClassName("nombre")[i].value;
+             // console.log("meta conseguida"+ y);
+
+            }
+            }
+      }
+      totalacumulado += ahorroanual;
+      tablota+="<td>"+numeral(ahorromensual.toFixed(2)).format('$0,0.00')+"</td><td>"+numeral(ahorroanual.toFixed(2)).format('$0,0.00')+"</td>";
+      tablota+="<td>"+numeral(totalacumulado.toFixed(2)).format('$0,0.00')+"</td><td>";
+      if(metaconseguida !== ""){
+           metascumplidas.push({x:parseInt(y),y:parseFloat(totalacumulado).toFixed(2)});
+           labels.push(metaconseguida);
+          tablota+="<b'>Meta conseguida: "+metaconseguida+"</b></td></tr>";
+      }
+        }
+        tablota+="</tbody></table></div><div class='contenedor-2' > <canvas id='graph1'></canvas> </div>";
+        tablota+="<div class='texto'>La gráfica muestra una curva con pendiente decreciente\n\
+que podría hacer real cualquier meta, si tan solo este fuera un comportamiento\n\
+realista en las finanzas personales.\n\
+Si estás tomando el curso pronto veremos cómo afrontar esta situación.<br>\n\
+Si no lo estás tomando ¿cómo llegaste a esta página?</div>";
+        document.getElementById("resultados").innerHTML =  tablota;
+        window.location.hash = "resultados";
+       //  hacerchart1(sobrevivencia,crecimiento,recreacion,gh, 'graph1', "Distribución de ingresos");
+       //  hacerchart1(33,33,33,1, 'graph2', "Distribución de ingresos ideal");
+         document.getElementById("calcular").style.right="1%";
+         document.getElementById("calcular").style.width="2em";
+         document.getElementById("calcular").style.height="2em";
+         document.getElementById("calcular").innerHTML="<img src='../../resources/reload.png' width='16px' height='16px'>";
+         hacerchart1(labels,metascumplidas, "Gráfica de la proyección lineal simplificada", "graph1");
+    }
+      function hacerchart1(etiquetas, metascumplidas, wat, donde)
+{
+console.log(metascumplidas);
+     var ctx = document.getElementById(donde).getContext('2d');
+
+  var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: etiquetas,
+        datasets: [{
+            label: 'Pesos ahorrados',
+            data: metascumplidas,
+            backgroundColor:
+                'rgba(2, 255, 2, 0.7)',
+            borderColor:
+                'rgba(2, 255, 2, 1)'
+        }]
+    },
+    options: {
+
+        title:{
+            display: true,
+            text: wat
+        }
+    }
+});
+
+  //-------------------------------------------------------------------------------------
+}
+function formatoPesos(cual){
+
+}
+
+    </script>
+    </head>
+    <body>
+        <div class="resaltar">
+            Proyección lineal de metas financieras
+        </div>
+        <div class="metas">
+            <table class="tablametas">
+                <thead>
+                <th>Nombre de la meta</th>
+                <th>Años para conseguirla</th>
+                <th>Costo</th>
+                <th>Ahorro anual</th>
+                <th>Ahorro mensual</th>
+               <!-- <th class="lastcolumna"></th> -->
+                </thead>
+                <tbody id="tablametas">
+                    <tr id="row0" class="renglon">
+                        <td>
+                            <input id="name0" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years0">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost0">
+                        </td>
+                        <td class="anual" id="anual0">
+
+                        </td>
+                        <td class="mensual" id="mensual0"></td>
+                     <!--     <td id="delete0" class="lastcolumna1"><button class="borrar" onclick="borrar(0)">x</button></td>
+                     -->
+                    </tr>
+                    <tr id="row1" class="renglon">
+                        <td>
+                            <input id="name1" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years1">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost1">
+                        </td>
+                        <td class="anual" id="anual1">
+
+                        </td>
+                        <td class="mensual" id="mensual1"></td>
+                        <!--     <td id="delete0" class="lastcolumna1"><button class="borrar" onclick="borrar(0)">x</button></td>
+                     -->
+                    </tr>
+                    <tr id="row2" class="renglon">
+                        <td>
+                            <input id="name2" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years2">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost2">
+                        </td>
+                        <td class="anual" id="anual2">
+
+                        </td>
+                        <td class="mensual" id="mensual2"></td>
+                       <!--     <td id="delete0" class="lastcolumna1"><button class="borrar" onclick="borrar(0)">x</button></td>
+                     -->
+                    </tr>
+                    <tr id="row3" class="renglon">
+                        <td>
+                            <input id="name3" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years3">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost3">
+                        </td>
+                        <td class="anual" id="anual3">
+
+                        </td>
+                        <td class="mensual" id="mensual3"></td>
+                        <!--     <td id="delete0" class="lastcolumna1"><button class="borrar" onclick="borrar(0)">x</button></td>
+                     -->
+                    </tr>
+                    <tr id="row4" class="renglon">
+                        <td>
+                            <input id="name4" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years4">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost4">
+                        </td>
+                        <td class="anual" id="anual4">
+
+                        </td>
+                        <td class="mensual" id="mensual4"></td>
+                       <!--     <td id="delete0" class="lastcolumna1"><button class="borrar" onclick="borrar(0)">x</button></td>
+                     -->
+                    </tr>
+                    <tr id="row5" class="renglon">
+                        <td>
+                            <input id="name5" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years5">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost5">
+                        </td>
+                        <td class="anual" id="anual5">
+
+                        </td>
+                        <td class="mensual" id="mensual5"></td>
+                        <!--     <td id="delete0" class="lastcolumna1"><button class="borrar" onclick="borrar(0)">x</button></td>
+                     -->
+                    </tr>
+                    <tr id="row6" class="renglon">
+                        <td>
+                            <input id="name5" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years6">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost6">
+                        </td>
+                        <td class="anual" id="anual6">
+
+                        </td>
+                        <td class="mensual" id="mensual6"></td>
+                       <!--     <td id="delete0" class="lastcolumna1"><button class="borrar" onclick="borrar(0)">x</button></td>
+                     -->
+                    </tr>
+                    <tr id="row7" class="renglon">
+                        <td id="totallabel">
+                            Total
+                        </td>
+                        <td id="totalyears">
+
+                        </td>
+                        <td id="totalcost">
+                        </td>
+                        <td id="totalanual">
+                           --
+                        </td>
+                        <td id="totalmensual">--</td>
+                       <!--     <td id="delete0" class="lastcolumna1"><button class="borrar" onclick="borrar(0)">x</button></td>
+                     -->
+                    </tr>
+
+
+
+                </tbody>
+            </table>
+         <!--   <button id='agregar' onclick='agregar()' >+</button> -->
+
+        </div>
+         <button id='calcular' onclick='calcular()' >Calcular!</button>
+              <div id='resultados' >
+
+
+
+              </div>
+    </body>
+</html>

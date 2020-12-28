@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/static/css/main.73073f36.chunk.css",
+    "main.js": "/static/js/main.d60c4af2.chunk.js",
+    "main.js.map": "/static/js/main.d60c4af2.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.b12a32d0.js",
+    "runtime-main.js.map": "/static/js/runtime-main.b12a32d0.js.map",
+    "static/js/2.bfcea6e4.chunk.js": "/static/js/2.bfcea6e4.chunk.js",
+    "static/js/2.bfcea6e4.chunk.js.map": "/static/js/2.bfcea6e4.chunk.js.map",
+    "static/js/3.db23a6e6.chunk.js": "/static/js/3.db23a6e6.chunk.js",
+    "static/js/3.db23a6e6.chunk.js.map": "/static/js/3.db23a6e6.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.73073f36.chunk.css.map": "/static/css/main.73073f36.chunk.css.map",
+    "static/js/2.bfcea6e4.chunk.js.LICENSE.txt": "/static/js/2.bfcea6e4.chunk.js.LICENSE.txt",
+    "static/media/App.css": "/static/media/LibreBaskerville-Regular.a27f99ca.ttf",
+    "static/media/logo1.3e943725.png": "/static/media/logo1.3e943725.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.b12a32d0.js",
+    "static/js/2.bfcea6e4.chunk.js",
+    "static/css/main.73073f36.chunk.css",
+    "static/js/main.d60c4af2.chunk.js"
+  ]
+}

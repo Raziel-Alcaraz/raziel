@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Comparativa Ahorro vs Crédito</title>
+         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="../mobile.css">
+     <link rel="stylesheet" type="text/css" href="../estilos.css">
+     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+       <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <link href="../../css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="../../css/mdb.min.css" rel="stylesheet">
+   <!--jquery de gugl -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- inicio chartjs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+<!-- fin chartjs -->
+<!--numeraljs -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+<script>
+ var montototal, maxyears, maxcostanual, mincostanual, totalacumulado, aumentoporinflacion=0,
+         aumentoporcredito =0, rendimiento, intereses, totalneutro, inflacion;
+ var proteccion = false;
+ var metasfaltantes =[[],[]];
+ var metasalcanzadas = [[],[]];
+ var costoneutrodecadameta=[[],[]];
+ var costofinaldecadameta = [[],[]];
+ var tiempopropuestodecadameta = [[],[]];
+ var costoanualdecadameta = [[],[]];
+ var costomensualdecadameta = [[],[]];
+ var costototaldelasmetas = [[],[]];
+ var costoneutrodelasmetas = [[],[]];
+ var ahorrodecadameta = [];
+ var pagadoacreditototal=0;
+ var ahorrototal=0;
+ var costodetodoneutral=0;
+function calcular(){
+proteccion = false;
+metasfaltantes =[[],[]];
+metasalcanzadas = [[],[]];
+costoneutrodecadameta=[[],[]];
+costofinaldecadameta = [[],[]];
+tiempopropuestodecadameta = [[],[]];
+costoanualdecadameta = [[],[]];
+costomensualdecadameta = [[],[]];
+costototaldelasmetas = [0,1];
+costoneutrodelasmetas = [0,1];
+ahorrodecadameta = [];
+pagadoacreditototal=0;
+ahorrototal=0;
+costodetodoneutral=0;
+ aumentoporcredito =0;
+ aumentoporinflacion=0;
+
+    setear();
+    rendimiento = parseFloat(document.getElementById("rendimiento").value);
+    inflacion = parseFloat(document.getElementById("inflacion").value);
+    intereses = parseFloat(document.getElementById("interes").value);
+    if(proteccion ===true){
+        rendimiento += inflacion;
+    }
+    inflacion = inflacion *0.01;
+    rendimiento = rendimiento *0.01;
+    intereses = intereses *0.01;
+
+    costototaldelasmetas[0]=0;
+    costototaldelasmetas[1]=0;
+    maxyears = 0;
+    totalneutro =0;
+//ciclo por cada meta inicio--------------------------------------------------------------------
+//nombre, years, cost
+    for(var i=0;i<document.getElementsByClassName("nombre").length;i++){
+       if(document.getElementsByClassName("nombre")[i].value.length>0
+        && document.getElementsByClassName("years")[i].value.length>0
+        && document.getElementsByClassName("cost")[i].value.length>0){
+
+            if(parseInt(document.getElementsByClassName("years")[i].value) > maxyears){
+                maxyears = parseInt(document.getElementsByClassName("years")[i].value);
+            }
+
+
+           metasfaltantes[1][i] = (document.getElementsByClassName("nombre")[i].value);
+           metasfaltantes[0][i] =(document.getElementsByClassName("nombre")[i].value);
+
+           costoneutrodecadameta[1].push(document.getElementsByClassName("cost")[i].value);
+           costoneutrodecadameta[0].push(document.getElementsByClassName("cost")[i].value);
+           totalneutro += parseInt(document.getElementsByClassName("cost")[i].value);
+           tiempopropuestodecadameta[1].push(parseInt(document.getElementsByClassName("years")[i].value));
+           tiempopropuestodecadameta[0].push(parseInt(document.getElementsByClassName("years")[i].value));
+
+
+           //definir costos finales credito inicio--------------------------------------------
+           costofinaldecadameta[1].push((costoneutrodecadameta[1][i] * (1+intereses)**tiempopropuestodecadameta[1][i]));
+           costoanualdecadameta[1].push(costofinaldecadameta[1][i]/tiempopropuestodecadameta[1][i]);
+           costomensualdecadameta[1].push(costoanualdecadameta[1][i]/12);
+           costototaldelasmetas[1] += costofinaldecadameta[1][i];
+           //definir costos finales credito fin------------------------------------------------
+
+           costofinaldecadameta[0].push((costoneutrodecadameta[0][i]));
+           ahorrodecadameta.push(0);
+
+       }
+    }
+
+//ciclo por cada meta fin------------------------------------------------------------------------
+costoneutrodelasmetas[0] = totalneutro;
+costoneutrodelasmetas[1] = totalneutro;
+    document.getElementById("totalcost").innerHTML = numeral(totalneutro).format('$0,0.00');
+    document.getElementById("totalyears").innerHTML = maxyears;
+    timeline();
+    }
+    function timeline(){
+        var labels =[0,1,2];
+        labels[0]=["Inicio"];
+        labels[1] = ["Inicio"];
+        labels[2] =["Inicio"];
+        var metascumplidas = [];
+         metascumplidas[0] = [{x:0,y:0}];
+         metascumplidas[1] = [{x:0,y:0}];
+         var capital=0;
+         var deuda;
+          var ahorroanual = 0 ;
+          var ahorromensual = 0;
+          var pagoanual = 0 ;
+          var pagomensual=0;
+          var metaconseguida="";
+          var metaconseguida2="";
+        var tablota="<table class='tablametas2'><thead><th>Año</th><th>Ahorro mensual</th>\n\
+<th>Pago mensual</th><th>Diferencia anual</th><th>Capital</th><th>Deuda</th><th>Notas</th><tbody>";
+      for(var y=0;y<=maxyears;y++){
+           labels[0].push(y);
+           //+(parseInt(new Date().getFullYear()))
+          tablota+="<tr><td>"+y+"</td>";
+          //ciclo loop
+          ahorroanual =0;
+          pagoanual = 0;
+          capital =0;
+          deuda=0;
+        for(var i=0;i<costofinaldecadameta[1].length;i++){
+            //sacar pagoanual para imprimir en tabla
+            if(y>=tiempopropuestodecadameta[1][i]){
+                if(y ===tiempopropuestodecadameta[1][i]){
+            metaconseguida2 = metasfaltantes[1][i];
+            metasalcanzadas[1].push(metaconseguida2);
+        }
+          }
+          else{
+        pagoanual += costoanualdecadameta[1][i];
+        pagadoacreditototal += costoanualdecadameta[1][i];
+        console.log(y,pagadoacreditototal);
+
+    }
+//-------------------------------------
+            // calcular ahorros inicio----------------------------
+
+
+        if(ahorrodecadameta[i]>= costofinaldecadameta[0][i]){
+          if((costoanualdecadameta[0][i])+ahorrodecadameta[i]
+                  >= costofinaldecadameta[0][i]*(1+inflacion) )  {
+            ahorroanual += (costofinaldecadameta[0][i]*(1+inflacion))-
+                    (ahorrodecadameta[i]);
+
+            ahorrodecadameta[i] +=ahorroanual*(1+rendimiento);
+            console.log("casi",metasfaltantes[0][i] );
+          }
+          if((ahorrodecadameta[i] *1.03<= costofinaldecadameta[0][i]||
+             ahorrodecadameta[i] *.97>= costofinaldecadameta[0][i]) &&
+             !metasalcanzadas[0].includes(metasfaltantes[0][i])){
+              metaconseguida = metasfaltantes[0][i];
+            metasalcanzadas[0].push(metasfaltantes[0][i]);
+          }
+        }
+        else{
+        costofinaldecadameta[0][i] =  costofinaldecadameta[0][i] *(1+inflacion);
+        costoanualdecadameta[0][i] =  costofinaldecadameta[0][i]/ (tiempopropuestodecadameta[0][i]);
+        ahorrodecadameta[i] += costoanualdecadameta[0][i];
+        ahorroanual +=costoanualdecadameta[0][i];
+        console.log(y,ahorroanual);
+        ahorrodecadameta[i] = ahorrodecadameta[i]*(1+rendimiento);
+         capital +=ahorrodecadameta[i];
+        ahorrototal += ahorroanual;
+        }
+            //calcular ahorros fin---------------------------------
+
+      }
+      deuda = costototaldelasmetas[1]- pagadoacreditototal;
+       pagomensual = pagoanual /12;
+       ahorromensual = ahorroanual/12;
+      tablota+="<td>"+numeral(ahorromensual.toFixed(2)).format('$0,0.00')
+              +"</td><td>"+numeral(pagomensual.toFixed(2)).format('$0,0.00')+"</td>";
+      tablota+="<td>"+numeral(((pagomensual.toFixed(2)-ahorromensual.toFixed(2))*12).toFixed(2)).format('$0,0.00')
+              +"</td>";
+      tablota+="<td>"+numeral(capital.toFixed(2)).format('$0,0.00')+"</td><td>\n\
+"+numeral(deuda.toFixed(2)).format('$0,0.00')+"</td><td>";
+      if(metaconseguida !== ""){
+           metascumplidas[0].push({x:parseInt(y),y:parseFloat(ahorrototal).toFixed(2)});
+
+          tablota+="<b'>Meta conseguida: "+metaconseguida+"(Ahorro). </b>";
+          metaconseguida="";
+      }
+      else{
+          metascumplidas[0].push({x:parseInt(y),y:parseFloat(ahorrototal).toFixed(2)});
+      }
+      if(metaconseguida2 !== ""){
+           metascumplidas[1].push({x:parseInt(y),y:parseFloat(pagadoacreditototal).toFixed(2)});
+         //  labels[0].push(metaconseguida2);
+          tablota+="<b'>Meta conseguida: "+metaconseguida2 +"(Crédito). </b>";
+          metaconseguida2="";
+      }
+    else{
+          metascumplidas[1].push({x:parseInt(y),y:parseFloat(pagadoacreditototal).toFixed(2)});
+      }
+         tablota+="</td></tr>";
+
+
+        }
+
+
+
+
+
+
+        aumentoporinflacion =(ahorrototal-costoneutrodelasmetas[1]);
+
+        tablota+="</tbody></table></div><div class='contenedor-2' > <canvas id='graph1'></canvas> </div>";
+        tablota+="<div class='texto'>Esperamos ver un aumento en el costo de tus metas de ";
+tablota+=numeral(aumentoporinflacion.toFixed(2)).format('$0,0.00')+" por concepto de inflación considerando que esta se mantenga\n\
+en un promedio de "+document.getElementById("inflacion").value+"% anual.\n\
+<br>Esperamos ver un aumento de al menos "+numeral((costototaldelasmetas[1]-totalneutro).toFixed(2)).format('$0,0.00')+" si decides usar un crédito\n\
+con un costo anual total de "+document.getElementById("interes").value+"%, tal monto puede aumentar si tus pagos no son puntuales.";
+        tablota+="<br>Esto quiere decir que pagarías al menos "+numeral(costototaldelasmetas[1]).format('$0,0.00')+" por algo que vale "+
+        numeral(costoneutrodelasmetas[1]).format('$0,0.00')+"<div>";
+        aumentoporinflacion=0;
+        aumentoporcredito=0;
+        //montototal[1]-aumentoporcredito    ,,,   montototal[1]
+        document.getElementById("resultados").innerHTML =  tablota;
+        window.location.hash = "resultados";
+       //  hacerchart1(sobrevivencia,crecimiento,recreacion,gh, 'graph1', "Distribución de ingresos");
+       //  hacerchart1(33,33,33,1, 'graph2', "Distribución de ingresos ideal");
+         document.getElementById("calcular1").style.right="1%";
+         document.getElementById("calcular1").style.width="2em";
+         document.getElementById("calcular1").style.height="2em";
+         document.getElementById("calcular1").innerHTML="<img src='../../resources/reload.png' width='16px' height='16px'>";
+         hacerchart1(labels[0],metascumplidas, "Gráfica de la proyección lineal simplificada", "graph1");
+    }
+      function hacerchart1(etiquetas, metascumplidas, wat, donde)
+{
+     var ctx = document.getElementById(donde).getContext('2d');
+    console.log(metascumplidas);
+  var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: etiquetas,
+        datasets: [{
+            label: 'Ahorro',
+            data: metascumplidas[0],
+            backgroundColor:
+                'rgba(2, 255, 2, 0)',
+            borderColor:
+                'rgba(2, 255, 2, 1)'
+        },{
+            label: 'Crédito',
+            data: metascumplidas[1],
+            backgroundColor:
+                'rgba(255, 2, 2, 0)',
+            borderColor:
+                'rgba(255, 2, 2, 1)'
+        }
+                ]
+    },
+    options: {
+
+        title:{
+            display: true,
+            text: wat
+        }
+    }
+});
+
+  //-------------------------------------------------------------------------------------
+}
+    function setear(){
+      if(document.getElementById("interesopt").value !=0){
+          document.getElementById("interes").value = document.getElementById("interesopt").value;
+      }
+      if(document.getElementById("rendimientoopt").value !=0){
+      if(document.getElementById("rendimientoopt").value==="SEG:1.0"){
+          document.getElementById("rendimiento").value = 1.0;
+          rendimiento = document.getElementById("rendimiento").value;
+          proteccion = true;
+      }
+      else  if(document.getElementById("rendimientoopt").value==="SEG:2.55"){
+          document.getElementById("rendimiento").value = 2.55;
+          rendimiento = document.getElementById("rendimiento").value;
+          proteccion = true;
+      }
+      else{
+          document.getElementById("rendimiento").value = document.getElementById("rendimientoopt").value;
+          rendimiento = document.getElementById("rendimiento").value;
+          proteccion = false;
+      }
+      }
+
+        if(document.getElementById("inflacionopt").value !=0){
+          document.getElementById("inflacion").value = document.getElementById("inflacionopt").value;
+          inflacion = document.getElementById("inflacion").value;
+      }
+      rendimiento = document.getElementById("rendimiento").value;
+    }
+    </script>
+    </head>
+    <body>
+        <div class="resaltar">
+            Comparativa Ahorro vs Crédito
+        </div>
+        <div class="metas">
+            <table class="tablametas">
+                <thead>
+                <th>Nombre de la meta</th>
+                <th>Años para conseguirla</th>
+                <th>Costo</th>
+               <!-- <th class="lastcolumna"></th> -->
+                </thead>
+                <tbody id="tablametas">
+                    <tr id="row0" class="renglon">
+                        <td>
+                            <input id="name0" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years0"  step="0.01">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost0"  step="0.01">
+                        </td>
+                    </tr>
+                    <tr id="row1" class="renglon">
+                        <td>
+                            <input id="name1" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years1"  step="0.01">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost1"  step="0.01">
+
+                    </tr>
+                    <tr id="row2" class="renglon">
+                        <td>
+                            <input id="name2" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years2"  step="0.01">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost2"  step="0.01">
+                        </td>
+
+                    </tr>
+                    <tr id="row3" class="renglon">
+                        <td>
+                            <input id="name3" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years3"  step="0.01">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost3"  step="0.01">
+                        </td>
+
+                    </tr>
+                    <tr id="row4" class="renglon">
+                        <td>
+                            <input id="name4" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years4"  step="0.01">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost4"  step="0.01">
+                        </td>
+
+                    </tr>
+                    <tr id="row5" class="renglon">
+                        <td>
+                            <input id="name5" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years5"  step="0.01">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost5"  step="0.01">
+                        </td>
+
+                    </tr>
+                    <tr id="row6" class="renglon">
+                        <td>
+                            <input id="name5" class="nombre" type="text">
+                        </td>
+                        <td>
+                            <input type="number" class="years" id="years6"  step="0.01">
+                        </td>
+                        <td>
+                            <input class="cost" type="number" id="cost6"  step="0.01">
+                        </td>
+
+                    </tr>
+                    <tr id="row7" class="renglon">
+                        <td id="totallabel">
+                            Total
+                        </td>
+                        <td id="totalyears">
+
+                        </td>
+                        <td id="totalcost">
+                        </td>
+
+                    </tr>
+
+                </tbody>
+            </table>
+         <!--   <button id='agregar' onclick='agregar()' >+</button> -->
+         <div id="variables">
+             <table>
+                 <thead>
+                 <th>Variable</th>
+                 <th>Valor</th>
+                 <th>Consideraciones</th>
+                 <th></th>
+                 </thead>
+                 <tbody>
+                     <tr>
+                         <td>Costo anual total del crédito</td>
+                         <td><input id="interes" type="number" step="0.01"></td>
+                         <td>
+                             <select id="interesopt" onchange="setear()">
+                                  <option value="0">Definir manualmente</option>
+                                 <option value="9">9%, Crédito inmobiliario de bajo interés</option>
+                                 <option value="12">12%, Crédito inmobiliario estándar</option>
+                                 <option value="25" selected>25%, Tarjeta de crédito de bajo interés</option>
+                                 <option value="35">35%, Tarjeta de crédito estándar</option>
+                             </select>
+
+
+                         </td>
+                         <td rowspan="4"> <button id='calcular1' onclick='calcular()' >Calcular!</button></td>
+                     </tr>
+                     <tr>
+                         <td>Rendimiento anual del ahorro</td>
+                         <td><input id="rendimiento" type="number" step="0.01"></td>
+                         <td> <select  id="rendimientoopt" onchange="setear()">
+                                  <option value="0">Definir manualmente</option>
+                                 <option value="3.34" selected>3.34%, Inversión bancaria de bajo rendimiento</option>
+                                 <option value="6.93">6.93%, CETEs (menos impuestos)</option>
+                                 <option value="SEG:1.0">1.0% REAL, Seguro de ahorro estándar</option>
+                                 <option value="SEG:2.55">2.55% REAL, Seguro de ahorro con inversión</option>
+                             </select>
+                         </td>
+                     </tr>
+                     <tr>
+                         <td>Inflación anual</td>
+                         <td><input id="inflacion" type="number" step="0.01"></td>
+                         <td>
+                             <select id="inflacionopt" onchange="setear()">
+                                  <option value="0">Definir manualmente</option>
+                                 <option value="2.13">2.13%, Inflación mímima histórica (México)</option>
+                                 <option value="4.2">4.2%, Inflación promedio 10 años (México)</option>
+                                 <option value="4.83" selected>4.83%, Inflación 2018 (México)</option>
+                                 <option value="8">8%, Escenario desfavorable (México)</option>
+                                 <option value="35">35%, Escenario catastrófico (México)</option>
+                                 <option value="10000">10,000%, Escenario si a alguien se le ocurre imprimir muchos billetes</option>
+                             </select>
+
+
+                         </td>
+                     </tr>
+                 </tbody>
+             </table>
+
+         </div>
+        </div>
+
+              <div id='resultados' >
+
+
+
+              </div>
+    </body>
+</html>

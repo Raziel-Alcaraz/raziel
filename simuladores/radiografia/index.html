@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<!--
+Documento hecho por Raziel Alcaraz, puedes usarlo
+como gustes, citando la fuente completa.
+-->
+<html>
+    <head>
+        <title>Radiografía financiera</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="../mobile.css">
+     <link rel="stylesheet" type="text/css" href="../estilos.css">
+     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+       <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <link href="../../css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="../../css/mdb.min.css" rel="stylesheet">
+   <!--jquery de gugl -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- inicio chartjs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+<!-- fin chartjs -->
+<!--numeraljs -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+  <script>
+     function calcular(){
+         var sobrevivencia, crecimiento, recreacion;
+         sobrevivencia=0;
+         crecimiento=0;
+         recreacion=0;
+         var divsobrevivencia, divcrecimiento, divrecreacion;
+         divsobrevivencia = document.getElementById("sobrevivencia");
+         divcrecimiento = document.getElementById("crecimiento");
+         divrecreacion = document.getElementById("recreacion");
+         var cortables = parseFloat(0);
+         for(var i=0;i< document.getElementsByClassName("cortable").length;i++){
+             if($.isNumeric(document.getElementsByClassName("cortable")[i].value)){
+             cortables += parseFloat(document.getElementsByClassName("cortable")[i].value);
+
+         }
+     }
+         for(var i=0;i< divsobrevivencia.querySelectorAll("input").length;i++){
+             if($.isNumeric(divsobrevivencia.querySelectorAll("input")[i].value)){
+             sobrevivencia += parseFloat(divsobrevivencia.querySelectorAll("input")[i].value);
+
+         }
+         }
+         for(var i=0;i< divcrecimiento.querySelectorAll("input").length;i++){
+             if($.isNumeric(divcrecimiento.querySelectorAll("input")[i].value)){
+             crecimiento += parseFloat(divcrecimiento.querySelectorAll("input")[i].value);
+
+         }
+         }
+         for(var i=0;i< divrecreacion.querySelectorAll("input").length;i++){
+             if($.isNumeric(divrecreacion.querySelectorAll("input")[i].value)){
+             recreacion += parseFloat(divrecreacion.querySelectorAll("input")[i].value);
+
+         }
+         }
+         var gastos = parseFloat(sobrevivencia)+parseFloat(crecimiento)+parseFloat(recreacion);
+         var total = parseFloat(0);
+         if($.isNumeric(document.getElementById("ingresoFijo").value)){
+           total+=parseFloat(document.getElementById("ingresoFijo").value);
+         }
+         if($.isNumeric(document.getElementById("ingresoVariable").value)){
+           total+=parseFloat(document.getElementById("ingresoVariable").value);
+         }
+         console.log("Sobrevivencia: "+ sobrevivencia);
+         console.log("crecimiento: "+ crecimiento);
+         console.log("recreacion: "+ recreacion);
+         var porcsobrevivencia, porccrecimiento, porcrecreacion, gh, porcgh;
+         porcsobrevivencia =100* (parseFloat(sobrevivencia)/parseFloat(total));
+         porccrecimiento =100* (parseFloat(crecimiento)/parseFloat(total));
+         porcrecreacion =100* (parseFloat(recreacion)/parseFloat(total));
+         gh = total-gastos;
+         porcgh = 100*gh/total;
+
+
+var textoresultados = "<div class='texto'>El resultado de tu radiografía financiera es el siguiente:<br>";
+textoresultados+= "<br>Estás invirtiendo el <b>"+porccrecimiento.toFixed(1)+"%</b> de tu poder adquisitivo." ;
+textoresultados+= " Gastas el <b>"+porcsobrevivencia.toFixed(1)+"%</b> de tus ingresos en necesidades básicas, " ;
+textoresultados+= "el <b>"+porcrecreacion.toFixed(1)+"%</b> en mantener tu estilo de vida" ;
+if(porcgh.toFixed(1)>0){
+textoresultados+= ", y el <b>"+porcgh.toFixed(1)+"%</b> no sabes ni en qué te los gastas. " ;
+}
+else if(porcgh.toFixed(1)<0){
+textoresultados+= "<br>Y no sabes ni de dónde sacas otros<b> $"+parseInt(-1*gh)+"</b> para seguir gastando. " ;
+}
+else {
+
+ textoresultados+= ".<br>No tienes ni un peso de gasto horimga, <b>¡FELICIDADES!</b>. " ;
+}
+var eficiencia = 100-porcgh;
+
+if(eficiencia>95 && eficiencia<=100){
+    textoresultados+="<br>Tu eficiencia financiera de "+eficiencia.toFixed(1)+"% es <b>Excelente</b>. Tienes \n\
+poco o nulo gasto no contabilizado. ¡Sigue así!<br>";
+}
+else if(eficiencia>80 && eficiencia<=95){
+    textoresultados+="<br>Tu eficiencia financiera de "+eficiencia.toFixed(1)+"% es <b>Buena</b>. Tienes \n\
+poco gasto no contabilizado. Puedes mejorar llevando un registro de gastos diario. La salud financiera comienza\n\
+por las decisiones aparentemente pequeñas que tomamos día a día.<br>";
+}
+else if(eficiencia>65 && eficiencia<=80){
+    textoresultados+="<br>Tu eficiencia financiera de "+eficiencia.toFixed(1)+"% es <b>Regular</b>. Tienes \n\
+muchos gastos no contabilizados. Puedes mejorar llevando un registro de gastos diario. La salud financiera comienza\n\
+por las decisiones aparentemente pequeñas que tomamos día a día.<br>";
+}
+else if(eficiencia>30 && eficiencia<=65){
+    textoresultados+="<br>Tu eficiencia financiera de "+eficiencia.toFixed(1)+"% es <b>Mala</b>. Tienes \n\
+demasiados gastos no contabilizados. Puedes mejorar llevando un registro de gastos diario. La salud financiera comienza\n\
+por las decisiones aparentemente pequeñas que tomamos día a día.<br>";
+}
+else if(eficiencia>0 && eficiencia<=30){
+    textoresultados+="<br>Tu eficiencia financiera de "+eficiencia.toFixed(1)+"% es <b>tan mala que parece un error del sistema</b>. Tienes \n\
+demasiados gastos no contabilizados. Puedes mejorar llevando un registro de gastos diario. La salud financiera comienza\n\
+por las decisiones aparentemente pequeñas que tomamos día a día. Te recomiendo revisar la información que\n\
+registraste e intentar de nuevo si crees que se trata de un error<br>";
+}
+else if( eficiencia<=0){
+    textoresultados+="<br>Tu eficiencia financiera de "+eficiencia.toFixed(1)+"% es <b>tan mala que parece un error del sistema</b>. Tienes \n\
+demasiados gastos no contabilizados. Puedes mejorar llevando un registro de gastos diario. La salud financiera comienza\n\
+por las decisiones aparentemente pequeñas que tomamos día a día. Te recomiendo revisar la información que\n\
+registraste e intentar de nuevo si crees que se trata de un error<br>";
+}
+else if( eficiencia>100){
+    textoresultados+="<br>Tu eficiencia financiera de "+eficiencia.toFixed(1)+"% es <b>tan buena que parece un error del sistema</b>. Tienes \n\
+pocos o nulos gastos no contabilizados. Puedes mejorar\n\
+los cálculos llevando un registro de gastos diario. La salud financiera comienza\n\
+por las decisiones aparentemente pequeñas que tomamos día a día. Te recomiendo revisar la información que\n\
+registraste e intentar de nuevo si crees que se trata de un error<br>";
+}
+textoresultados+="</div><div class='contenedor-1' > <canvas id='graph1'></canvas> \n\
+ <canvas id='graph2'></canvas> </div>\n\
+<div class='texto'>Puedes comparar el manejo de tu poder adquisitivo con \n\
+la distribución de ingresos ideal recomendada a nivel mundial usando las gráficas de arriba.</div>";
+textoresultados+="<div class='texto'> El análisis automático indica que puedes \n\
+ahorrar entre <b>$"+((cortables+gh)/2).toFixed(2)+"</b> y <b>$"+((cortables+gh)).toFixed(2)+"</b> sin embargo\n\
+aún estoy desarrollando una herramienta de inteligencia artificial que permita hacerlo realmente preciso.</div>";
+textoresultados+="<div class='texto'></div>";
+document.getElementById("resultados"). innerHTML = textoresultados;
+         window.location.hash = "resultados";
+         hacerchart1(sobrevivencia,crecimiento,recreacion,gh, 'graph1', "Distribución de ingresos");
+         hacerchart1(33,33,33,1, 'graph2', "Distribución de ingresos ideal");
+         document.getElementById("calcular").style.right="1%";
+         document.getElementById("calcular").style.width="2em";
+         document.getElementById("calcular").style.height="2em";
+         document.getElementById("calcular").innerHTML="<img src='../../resources/reload.png' width='16px' height='16px'>";
+     }
+     function validar(){
+         console.log("validando");
+         if($.isNumeric(document.getElementById("ingresoFijo").value) ||
+                 $.isNumeric(document.getElementById("ingresoVariable").value)){
+             document.getElementById('calcular').disabled=false;
+             console.log("valido");
+         }else if(!$.isNumeric(document.getElementById("ingresoFijo").value) ||
+                 !$.isNumeric(document.getElementById("ingresoVariable").value)){
+           document.getElementById('calcular').disabled=true;
+         }
+     }
+     function hacerchart1(sup,cre,rec,gh, donde, wat)
+{
+
+     var ctx = document.getElementById(donde).getContext('2d');
+
+  var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Necesidades básicas', 'Inversión', 'Estilo de vida', 'No contabilizados'],
+        datasets: [{
+            label: wat,
+            data: [sup,cre,rec,gh],
+            backgroundColor: [
+                'rgba(255, 12, 12, 0.7)',
+                'rgba(2, 255, 2, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(200, 200, 200, 0.7)'
+
+            ],
+            borderColor: [
+                'rgba(255, 12, 12, 1)',
+                'rgba(2, 255, 2, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(200, 200, 200, 1)'
+
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        title:{
+            display: true,
+            text: wat
+        }
+    }
+});
+
+  //-------------------------------------------------------------------------------------
+}
+   </script>
+    </head>
+    <body>
+        <div class="resaltar">
+            Radiografía financiera
+        </div>
+        <div class="topcontainer">
+            <label>Ingresos fijos</label><br>
+                <input type="number" id='ingresoFijo' onchange='validar()'><br>
+                <label>Ingreso variable promedio</label><br>
+                <input type="number" id='ingresoVariable' onchange='validar()'><br>
+
+        </div>
+        <div>
+            <div class="triples" id="sobrevivencia">
+                <label>Colegiaturas</label><br>
+                <input type="number"><br>
+                <label>Luz</label><br>
+                <input type="number"><br>
+                <label>Renta</label><br>
+                <input type="number"><br>
+                <label>Agua</label><br>
+                <input type="number"><br>
+                <label>Mantenimiento</label><br>
+                <input type="number"><br>
+                <label>Gas</label><br>
+                <input type="number"><br>
+                <label>Supermercado</label><br>
+                <input type="number"><br>
+                <label>Ropa</label><br>
+                <input type="number"  class="cortable"><br>
+                <label>Teléfono fijo</label><br>
+                <input type="number"><br>
+                <label>Internet</label><br>
+                <input type="number"><br>
+                <label>Cable</label><br>
+                <input type="number"><br>
+                <label>Celular</label><br>
+                <input type="number"><br>
+                <label>Gasolina</label><br>
+                <input type="number"><br>
+                <label>Transporte</label><br>
+                <input type="number"><br>
+                <label>Automóvil/mantenimiento</label><br>
+                <input type="number"><br>
+                <label>Imprevistos</label><br>
+                <input type="number"><br>
+                <label>Impuestos</label><br>
+                <input type="number"><br>
+                <label>Otros</label><br>
+                <input type="number"><br>
+
+            </div>
+            <div class="triples" id="recreacion">
+                <label>Servicio doméstico</label><br>
+                <input type="number"><br>
+                <label>Deportes</label><br>
+                <input type="number"><br>
+                <label>Diversión</label><br>
+                <input type="number"><br>
+                <label>Vacaciones</label><br>
+                <input type="number"><br>
+                <label>Cursos/posgrados</label><br>
+                <input type="number"><br>
+                <label>Entretenimiento</label><br>
+                <input type="number"><br>
+                <label>Tarjeta de crédito</label><br>
+                <input type="number"><br>
+                <label>Crédito hipotecario</label><br>
+                <input type="number"><br>
+                <label>Otros creditos</label><br>
+                <input type="number"><br>
+                <label>Golosinas y refrescos</label><br>
+                <input type="number"  class="cortable"><br>
+                <label>Agua embotellada</label><br>
+                <input type="number" class="cortable"><br>
+                <label>Salidas</label><br>
+                <input type="number"><br>
+                <label>Alimentos fuera de casa</label><br>
+                <input type="number" class="cortable"><br>
+                <label>Otros</label><br>
+                <input type="number"><br>
+
+            </div>
+            <div class="triples" id="crecimiento">
+                <label>Fondos de inversión</label><br>
+                <input type="number"><br>
+                <label>Inmuebles</label><br>
+                <input type="number"><br>
+                <label>Negocios</label><br>
+                <input type="number"><br>
+                <label>Acciones</label><br>
+                <input type="number"><br>
+                <label>Ahorro bancario</label><br>
+                <input type="number"><br>
+                <label>CETES/bonos</label><br>
+                <input type="number"><br>
+                <label>Seguro de ahorro</label><br>
+                <input type="number"><br>
+                <label>Seguro de retiro</label><br>
+                <input type="number"><br>
+                <label>Seguro con inversión</label><br>
+                <input type="number"><br>
+                <label>Seguro educativo</label><br>
+                <input type="number"><br>
+                <label>Otros</label><br>
+                <input type="number"><br>
+            </div>
+    </div>
+              <button id='calcular' onclick='calcular()' disabled>Calcular!</button>
+              <div id='resultados'>
+
+
+
+              </div>
+
+
+
+    </body>
+</html>
